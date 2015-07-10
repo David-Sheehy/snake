@@ -50,7 +50,68 @@ var Game = {
 
 
     update: function() {
-        // left empty for now
+        // Handle arrow key presses, while not allowing illegal direction
+        // changes.
+        
+        if (cursors.right.isDown && direction != 'left') {
+            new_direction = 'right';
+        }
+        else if (cursors.left.isDown && direction != 'right') {
+            new_direction = 'left';
+        }
+        else if (cursors.up.isDown && direction != 'down') {
+            new_direction = 'up';
+        }
+        else if (cursors.down.isDown && direction != 'up') {
+            new_direction = 'down';
+        }
+
+        // speed is calculated based on score
+        speed = Math.min(10, Math.floor(score / 5));
+        speedTextValue.text = '' + speed;
+
+        // increase the delay counter
+        updateDelay++;
+        if (updateDelay % (10 - speed) == 0) { 
+            // snake movement
+            var firstCell = snake[snake.length - 1];
+            var lastCell = snake.shift();
+            var oldLastCellx = lastCell.x;
+            var oldLastCelly = lastCell.y;
+
+
+            if (new_direction ) {
+                direction = new_direction;
+                new_direction = null;
+            }
+
+
+            // Change the last cell's coordinates relative to the head of the
+            // snake, according to the direction.
+            if(direction == 'right') {
+                lastCell.x = firstCell.x + 15;
+                lastCell.y = firstCell.y;
+            }
+            else if (direction == 'left') {
+                lastCell.x = firstCell.x - 15;
+                lastCell.y = firstCell.y;
+            }
+            else if (direction == 'up') {
+                lastCell.x = firstCell.x;
+                lastCell.y = firstCell.y - 15;
+            }
+            else if (direction == 'down') {
+                lastCell.x = firstCell.x;
+                lastCell.y = firstCell.y + 15;
+            }
+
+            // Place the last cell in the front of the stack.
+            // mark it as the first cell
+            snake.push(lastCell);
+            firstCell = lastCell;
+
+        }
+
     },
 
     generateApple: function() {
