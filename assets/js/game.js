@@ -109,9 +109,48 @@ var Game = {
             // mark it as the first cell
             snake.push(lastCell);
             firstCell = lastCell;
+            // end of snake movement
+
+            if(addNew) {
+                snake.unshift(game.add.sprite(oldLastCellx, oldLastCelly, 'snake'));
+                addNew = false;
+            }
+
+            // check for collisions
+            this.appleCollision();
+            this.selfCollision(firstCell);
+            this.wallCollision(firstCell);
 
         }
+    },
 
+    appleCollision: function() {
+        // check if any part of the snake is overlapping the apple.
+        // this is needed if the apple spanws inside the snake.
+        for (var i = 0; i < snake.length; ++i) {
+            if(snake[i].x == apple.x && snake[i].y == apple.y) {
+                addNew = true;
+                apple.destroy();
+                this.generateApple();
+                score++;
+                scoreTextValue.text = score.toString();
+            }
+        }
+    },
+
+    selfCollision: function(head) {
+        // check if the head of the snake overlaps with any part of the snake.
+        for (var i = 0; i < snake.length; ++i ) {
+            if(head.x == snake[i].x && head.y == snake[i].y && head != snake[i]) { 
+                game.state.start('Game_Over');
+            }
+        }
+    },
+
+    wallCollision: function(head) {
+        if(head.x >= 600 || head.x < 0 || head.y >= 450 || head.y < 0) {
+            game.state.start('Game_Over');
+        }
     },
 
     generateApple: function() {
